@@ -1,0 +1,566 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>Calculadora da Recorrência</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<style>
+/* Layout: faixa marsala no topo; coluna de preenchimento à esquerda, plano gerado à direita; empilha no celular */
+:root {
+  --bg: #FFFFFF;
+  --surface: #FBF8F4;
+  --surface-2: #F5EEE3;
+  --ink: #2B2226;
+  --muted: #6E6468;
+  --line: #E8DFD2;
+  --brand: #5C1A26;
+  --brand-ink: #FFFFFF;
+  --gold: #A9844A;
+  --gold-soft: #F3E8D6;
+  --good: #2F6B4A;
+  --font: "Source Sans 3", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  --r: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17120F; --surface: #1F1915; --surface-2: #2A211B; --ink: #F1EAE2; --muted: #B5A99E; --line: #3A2F27;
+    --brand: #8E3445; --brand-ink: #FFFFFF; --gold: #D2AE72; --gold-soft: #3A2E1F; --good: #7FC49C; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17120F; --surface: #1F1915; --surface-2: #2A211B; --ink: #F1EAE2; --muted: #B5A99E; --line: #3A2F27;
+  --brand: #8E3445; --brand-ink: #FFFFFF; --gold: #D2AE72; --gold-soft: #3A2E1F; --good: #7FC49C; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.5; }
+.band { background: var(--brand); color: var(--brand-ink); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.band .wrap { padding-block: 32px 28px; display: flex; flex-direction: column; gap: 6px; }
+.eyebrow { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; font-weight: 600; opacity: .8; }
+h1 { margin: 0; font-size: clamp(28px, 4vw, 40px); line-height: 1.1; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+.band p { margin: 0; max-width: 62ch; opacity: .9; font-size: 17px; }
+main .wrap { padding-block: 28px 56px; display: grid; grid-template-columns: minmax(0, 400px) minmax(0, 1fr); gap: 28px; align-items: start; }
+@media (max-width: 900px) { main .wrap { grid-template-columns: minmax(0, 1fr); } }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 22px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.form { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); }
+@media (max-width: 900px) { .form { position: static; } }
+.group { display: flex; flex-direction: column; gap: 12px; }
+.group h2 { margin: 0; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--brand); font-weight: 700; }
+.sep { height: 1px; background: var(--line); }
+label { display: flex; flex-direction: column; gap: 5px; font-size: 14px; font-weight: 600; color: var(--ink); }
+label small { font-weight: 400; color: var(--muted); font-size: 13px; }
+input { font: inherit; font-size: 16px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; width: 100%; min-width: 0; }
+input:focus-visible, button:focus-visible, .svc:focus-within { outline: 2px solid var(--gold); outline-offset: 2px; }
+.row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.prefix { position: relative; }
+.prefix span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; font-size: 15px; pointer-events: none; }
+.prefix input { padding-left: 38px; }
+.suffix { position: relative; }
+.suffix span { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; pointer-events: none; }
+.suffix input { padding-right: 64px; }
+
+.svcs { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.svc { display: flex; flex-direction: row; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); cursor: pointer; }
+.svc input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.svc .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line); flex: none; display: grid; place-items: center; }
+.svc .dot::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: transparent; }
+.svc b { font-size: 15px; display: block; }
+.svc em { font-style: normal; font-size: 13px; color: var(--muted); }
+.svc:has(input:checked) { border-color: var(--brand); background: var(--gold-soft); }
+.svc:has(input:checked) .dot { border-color: var(--brand); }
+.svc:has(input:checked) .dot::after { background: var(--brand); }
+
+.actions { display: flex; flex-wrap: wrap; gap: 10px; }
+button { font: inherit; font-size: 15px; font-weight: 600; border-radius: 999px; padding: 11px 18px; cursor: pointer; border: 1px solid var(--brand); }
+.primary { background: var(--brand); color: var(--brand-ink); }
+.ghost { background: transparent; color: var(--brand); }
+:root[data-theme="dark"] .ghost { color: var(--gold); border-color: var(--gold); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ghost { color: var(--gold); border-color: var(--gold); } }
+.note { font-size: 13px; color: var(--muted); min-height: 1.2em; }
+
+/* Plano */
+.plan { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.who { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; align-items: baseline; padding-bottom: 14px; border-bottom: 2px solid var(--gold); }
+.who h2 { margin: 0; font-size: 24px; line-height: 1.2; color: var(--brand); text-wrap: balance; }
+.who span { color: var(--muted); font-size: 14px; }
+:root[data-theme="dark"] .who h2, :root[data-theme="dark"] .card .big { color: var(--gold); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .who h2, :root:not([data-theme="light"]) .card .big { color: var(--gold); } }
+
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 760px) { .cards { grid-template-columns: minmax(0, 1fr); } }
+.card { border: 1px solid var(--line); border-radius: var(--r); padding: 18px; display: flex; flex-direction: column; gap: 10px; background: var(--bg); min-width: 0; }
+.card.lead { border-color: var(--brand); box-shadow: inset 0 0 0 1px var(--brand); }
+.card .tag { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; color: var(--gold); }
+.card .big { font-size: 44px; line-height: 1; font-weight: 700; color: var(--brand); font-variant-numeric: tabular-nums; }
+.card .big small { font-size: 16px; font-weight: 600; color: var(--muted); margin-left: 6px; }
+.facts { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; font-size: 14px; }
+.facts li { display: flex; justify-content: space-between; gap: 10px; border-top: 1px solid var(--line); padding-top: 6px; }
+.facts li span { color: var(--muted); }
+.facts li b { font-variant-numeric: tabular-nums; text-align: right; }
+.card p { margin: 0; font-size: 14px; color: var(--ink); }
+
+.section h3 { margin: 0 0 4px; font-size: 18px; color: var(--ink); }
+.section > p { margin: 0 0 12px; color: var(--muted); font-size: 14px; max-width: 70ch; }
+.chart { width: 100%; height: auto; display: block; }
+.chart text { font-family: var(--font); }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; min-width: 620px; }
+th { background: var(--surface-2); color: var(--ink); text-align: right; font-weight: 600; padding: 9px 12px; font-size: 13px; }
+th:first-child, td:first-child { text-align: left; }
+td { padding: 8px 12px; border-top: 1px solid var(--line); text-align: right; }
+tr.hit td.in { color: var(--good); font-weight: 700; }
+.closing { background: var(--brand); color: var(--brand-ink); border-radius: var(--r); padding: 20px 22px; font-size: 16px; line-height: 1.5; }
+.closing b { color: #F3E3C7; }
+details summary { cursor: pointer; font-weight: 600; color: var(--brand); padding: 6px 0; }
+:root[data-theme="dark"] details summary { color: var(--gold); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) details summary { color: var(--gold); } }
+.cta { border: 1px solid var(--gold); background: var(--gold-soft); border-radius: var(--r); padding: 20px 22px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px; }
+.cta div { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1 1 320px; }
+.cta strong { font-size: 20px; line-height: 1.25; color: var(--brand); text-wrap: balance; }
+:root[data-theme="dark"] .cta strong { color: var(--gold); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .cta strong { color: var(--gold); } }
+.cta p { margin: 0; color: var(--ink); font-size: 15px; }
+.cta aside { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.wa { display: inline-flex; align-items: center; gap: 8px; background: var(--brand); color: var(--brand-ink); text-decoration: none; font-weight: 700; font-size: 15px; border-radius: 999px; padding: 12px 20px; }
+.wa:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.cta small { color: var(--muted); font-size: 13px; user-select: all; }
+footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
+@media print {
+  .band, .form, footer, .actions { display: none !important; }
+  main .wrap { display: block; padding: 0; }
+  body { background: #fff; color: #000; }
+}
+@media (prefers-reduced-motion: no-preference) { .card .big { transition: color .2s; } }
+</style>
+
+<header class="band">
+  <div class="wrap">
+    <span class="eyebrow">Workshop Contrato Todo Mês</span>
+    <h1>Calculadora da Recorrência</h1>
+    <p>Descubra quantos contratos fechar por mês e quando os seus honorários começam a entrar, todo mês, com o serviço previdenciário que você escolher.</p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <form class="panel form" id="f" novalidate>
+      <div class="group">
+        <h2>Quem está preenchendo</h2>
+        <label for="nome">Seu nome<input id="nome" autocomplete="name" placeholder="Ex.: Dra. Ana Souza"></label>
+        <label for="escritorio">Nome do escritório<input id="escritorio" autocomplete="organization" placeholder="Ex.: Souza Advocacia"></label>
+        <label for="data">Data do preenchimento<input id="data" type="date"></label>
+      </div>
+      <div class="sep"></div>
+      <div class="group">
+        <h2>Serviço que você vai trabalhar</h2>
+        <div class="svcs" role="radiogroup" aria-label="Serviço">
+          <label class="svc"><input type="radio" name="svc" value="sm" id="svc-sm" checked><span class="dot"></span><span><b>Salário-Maternidade</b><em>R$ 2.000 por contrato · cerca de 4 meses</em></span></label>
+          <label class="svc"><input type="radio" name="svc" value="bpc" id="svc-bpc"><span class="dot"></span><span><b>BPC/LOAS</b><em>a partir de R$ 10.000 · 6 a 8 meses</em></span></label>
+          <label class="svc"><input type="radio" name="svc" value="aa" id="svc-aa"><span class="dot"></span><span><b>Auxílio-Acidente</b><em>a partir de R$ 12.000 · cerca de 10 meses</em></span></label>
+        </div>
+      </div>
+      <div class="sep"></div>
+      <div class="group">
+        <h2>Seus números</h2>
+        <label for="hon">Honorário médio por contrato<div class="prefix"><span>R$</span><input id="hon" inputmode="decimal"></div></label>
+        <div class="row2">
+          <label for="prazo">Prazo até receber<div class="suffix"><input id="prazo" type="number" min="1" max="36" step="1"><span>meses</span></div></label>
+          <label for="perda">Perda de contratos<div class="suffix"><input id="perda" type="number" min="0" max="90" step="1"><span>%</span></div></label>
+        </div>
+        <label for="meta">Meta mensal de honorários<div class="prefix"><span>R$</span><input id="meta" inputmode="decimal"></div></label>
+        <div class="row2">
+          <label for="inicio">Começa a fechar em<input id="inicio" type="month"></label>
+          <label for="hoje">Fecha hoje, por mês<input id="hoje" type="number" min="0" step="1"></label>
+        </div>
+        <small style="color:var(--muted);font-size:13px">Perda: clientes que desistem, somem ou não pagam. O valor de cada contrato continua cheio.</small>
+      </div>
+      <div class="sep"></div>
+      <div class="group">
+        <h2>Suas projeções</h2>
+        <div class="row2">
+          <label for="acum">Primeiros a fechar<div class="prefix"><span>R$</span><input id="acum" inputmode="decimal"></div></label>
+          <label for="meses">Em quantos meses<div class="suffix"><input id="meses" type="number" min="1" max="60" step="1"><span>meses</span></div></label>
+        </div>
+        <label for="alta">Quanto quer receber por mês<div class="prefix"><span>R$</span><input id="alta" inputmode="decimal"></div></label>
+      </div>
+      <div class="sep"></div>
+      <div class="actions">
+        <button type="button" class="primary" id="pdf">Baixar meu plano em PDF</button>
+        <button type="button" class="ghost" id="save">Salvar</button>
+        <button type="button" class="ghost" id="print" hidden>Imprimir</button>
+      </div>
+      <div class="note" id="status" role="status" aria-live="polite"></div>
+    </form>
+
+    <section class="plan" aria-label="Seu plano">
+      <div class="who">
+        <h2 id="who-title">Plano de recorrência</h2>
+        <span id="who-meta"></span>
+      </div>
+
+      <div class="cards">
+        <article class="card lead">
+          <span class="tag">Sua meta mensal</span>
+          <div class="big" id="c1-big">0</div>
+          <p>contratos para fechar por mês</p>
+          <ul class="facts">
+            <li><span>Devem pagar</span><b id="c1-pagam"></b></li>
+            <li><span>Faltam em relação a hoje</span><b id="c1-faltam"></b></li>
+            <li><span>Começa a receber</span><b id="c1-inicio"></b></li>
+            <li><span>Passa a entrar por mês</span><b id="c1-mensal"></b></li>
+          </ul>
+        </article>
+        <article class="card">
+          <span class="tag" id="c2-tag">Primeiros R$ 100 mil</span>
+          <div class="big" id="c2-big">0</div>
+          <p id="c2-sub">contratos por mês</p>
+          <ul class="facts">
+            <li><span>Começa a receber</span><b id="c2-inicio"></b></li>
+            <li><span>Entra por mês</span><b id="c2-mensal"></b></li>
+            <li><span>Último mês</span><b id="c2-fim"></b></li>
+            <li><span>Total recebido</span><b id="c2-total"></b></li>
+          </ul>
+        </article>
+        <article class="card">
+          <span class="tag" id="c3-tag">R$ 100 mil por mês</span>
+          <div class="big" id="c3-big">0</div>
+          <p>contratos para fechar por mês</p>
+          <ul class="facts">
+            <li><span>Por semana</span><b id="c3-semana"></b></li>
+            <li><span>Por dia útil</span><b id="c3-dia"></b></li>
+            <li><span>Começa a receber</span><b id="c3-inicio"></b></li>
+            <li><span>Passa a entrar por mês</span><b id="c3-mensal"></b></li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="closing" id="closing"></div>
+
+      <div class="cta">
+        <div>
+          <strong>Quer estruturar todo o seu escritório?</strong>
+          <p>Participe da Mentoria de Implantação rumo aos 100k e implante setores, fluxos e controle com acompanhamento.</p>
+        </div>
+        <aside>
+          <a class="wa" href="https://wa.me/5587998094537?text=Quero%20saber%20mais%20sobre%20a%20Mentoria%20rumo%20aos%20100k" target="_blank" rel="noopener">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11.5a8 8 0 0 1-11.8 7L4 20l1.5-4.1A8 8 0 1 1 20 11.5z"/></svg>
+            Quero saber mais
+          </a>
+          <small>WhatsApp: (87) 99809-4537</small>
+        </aside>
+      </div>
+
+      <div class="section">
+        <h3>A escada da sua meta mensal</h3>
+        <p id="chart-sub">Quanto dinheiro entra a cada mês se você fechar a sua meta de contratos todo mês. A linha tracejada é a sua meta.</p>
+        <svg class="chart" id="chart" viewBox="0 0 760 300" role="img" aria-label="Gráfico do dinheiro que entra por mês"></svg>
+      </div>
+
+      <details class="section">
+        <summary>Ver a escada mês a mês</summary>
+        <div class="tablewrap" style="margin-top:10px">
+          <table>
+            <thead><tr><th>Mês</th><th>Você fecha</th><th>Devem pagar</th><th>Honorários fechados</th><th>Dinheiro que entra</th><th>Ainda a receber</th></tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+  </div>
+</main>
+<footer><div class="wrap">Valores sugeridos: médias de um escritório previdenciário com atendimento 100% virtual e sem cobrança inicial. Use sempre os números da sua realidade.</div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function () {
+  var SVC = {
+    sm:  { nome: "Salário-Maternidade", hon: 2000,  prazo: 4 },
+    bpc: { nome: "BPC/LOAS",            hon: 10000, prazo: 7 },
+    aa:  { nome: "Auxílio-Acidente",    hon: 12000, prazo: 10 }
+  };
+  var MESES = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+  var KEY = "calc-recorrencia-v1";
+  var $ = function (id) { return document.getElementById(id); };
+  var brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+  var n1 = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 });
+  var money = function (v) { return brl.format(Math.round(v)); };
+
+  function parseMoney(s) {
+    if (s == null) return NaN;
+    s = String(s).replace(/[^\d,.-]/g, "");
+    if (s.indexOf(",") > -1) s = s.replace(/\./g, "").replace(",", ".");
+    else s = s.replace(/\.(?=\d{3}(\D|$))/g, "");
+    return parseFloat(s);
+  }
+  function fmtMoneyInput(v) { return new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 }).format(v); }
+  function today() { var d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function nextMonth() { var d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + 1); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); }
+  function addM(ym, k) { var y = +ym.slice(0, 4), m = +ym.slice(5, 7) - 1 + k; y += Math.floor(m / 12); m = ((m % 12) + 12) % 12; return { y: y, m: m }; }
+  function lab(ym, k, short) { var d = addM(ym, k); return MESES[d.m] + "/" + (short ? String(d.y).slice(2) : d.y); }
+
+  var defaults = { nome: "", escritorio: "", data: today(), svc: "sm", hon: 2000, prazo: 4, perda: 20, meta: 20000, inicio: nextMonth(), hoje: 0, acum: 100000, meses: 12, alta: 100000 };
+
+  function setForm(s) {
+    $("nome").value = s.nome || ""; $("escritorio").value = s.escritorio || ""; $("data").value = s.data || today();
+    var r = document.querySelector('input[name="svc"][value="' + (s.svc || "sm") + '"]'); if (r) r.checked = true;
+    $("hon").value = fmtMoneyInput(s.hon); $("prazo").value = s.prazo; $("perda").value = s.perda;
+    $("meta").value = fmtMoneyInput(s.meta); $("inicio").value = s.inicio; $("hoje").value = s.hoje;
+    $("acum").value = fmtMoneyInput(s.acum); $("meses").value = s.meses; $("alta").value = fmtMoneyInput(s.alta);
+  }
+  function getState() {
+    var svc = (document.querySelector('input[name="svc"]:checked') || {}).value || "sm";
+    var num = function (id, d) { var v = parseFloat($(id).value); return isFinite(v) ? v : d; };
+    var mon = function (id, d) { var v = parseMoney($(id).value); return isFinite(v) && v > 0 ? v : d; };
+    return {
+      nome: $("nome").value.trim(), escritorio: $("escritorio").value.trim(), data: $("data").value || today(), svc: svc,
+      hon: mon("hon", SVC[svc].hon), prazo: Math.max(1, Math.round(num("prazo", SVC[svc].prazo))),
+      perda: Math.min(90, Math.max(0, num("perda", 20))), meta: mon("meta", 20000),
+      inicio: /^\d{4}-\d{2}$/.test($("inicio").value) ? $("inicio").value : nextMonth(),
+      hoje: Math.max(0, Math.round(num("hoje", 0))), acum: mon("acum", 100000),
+      meses: Math.max(1, Math.round(num("meses", 12))), alta: mon("alta", 100000)
+    };
+  }
+
+  function calc(s) {
+    var p = s.perda / 100, H = s.hon, k = 1 - p;
+    var r = { s: s, svcNome: SVC[s.svc].nome };
+    r.fechar = Math.ceil((s.meta / H) / k);
+    r.pagam = s.meta / H;
+    r.faltam = Math.max(0, r.fechar - s.hoje);
+    r.inicioReceb = lab(s.inicio, s.prazo);
+    r.mensal = r.fechar * k * H;
+    r.pc = Math.ceil(s.acum / (k * H * s.meses));
+    r.pMensal = r.pc * k * H;
+    r.pFim = lab(s.inicio, s.meses - 1 + s.prazo);
+    r.pTotal = r.pMensal * s.meses;
+    r.pDe = lab(s.inicio, 0); r.pAte = lab(s.inicio, s.meses - 1);
+    r.ac = Math.ceil((s.alta / H) / k);
+    r.aSem = r.ac / (52 / 12); r.aDia = r.ac / 22;
+    r.aMensal = r.ac * k * H;
+    r.rows = []; var aReceber = 0, valor = r.fechar * k * H;
+    for (var i = 1; i <= 18; i++) {
+      var entra = i > s.prazo ? valor : 0; aReceber += valor - entra;
+      r.rows.push({ mes: lab(s.inicio, i - 1, true), fecha: r.fechar, devem: r.fechar * k, valor: valor, entra: entra, aReceber: aReceber });
+    }
+    return r;
+  }
+
+  function diaTxt(r) { return r.aDia < 1 ? "1 a cada " + Math.round(22 / r.ac) + " dias úteis" : n1.format(r.aDia); }
+
+  function closingText(r) {
+    var s = r.s;
+    return "Feche <b>" + r.fechar + " contratos de " + r.svcNome + " todo mês</b>, a partir de " + lab(s.inicio, 0) + ". Cada contrato leva cerca de " + s.prazo +
+      " meses para virar dinheiro: você começa a receber em <b>" + r.inicioReceb + "</b> e, a partir daí, entram cerca de <b>" + money(r.mensal) +
+      " por mês</b>. Para ter " + money(s.alta) + " entrando todo mês, o ritmo sobe para " + r.ac + " contratos por mês. Agora que você sabe que é possível, a estrutura precisa vir antes do volume: implante setores, fluxos e controle agora, para crescer com organização e não na desordem.";
+  }
+
+  function drawChart(r) {
+    var svg = $("chart"), W = 760, Hh = 300, L = 70, R = 16, T = 18, B = 40;
+    var max = Math.max(r.s.meta, r.mensal) * 1.15, step = niceStep(max / 4);
+    max = Math.ceil(max / step) * step;
+    var bw = (W - L - R) / r.rows.length, y = function (v) { return T + (Hh - T - B) * (1 - v / max); };
+    var h = "";
+    for (var t = 0; t <= max + 1; t += step) {
+      h += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(t) + '" y2="' + y(t) + '" stroke="var(--line)" stroke-width="1"/>';
+      h += '<text x="' + (L - 8) + '" y="' + (y(t) + 4) + '" text-anchor="end" font-size="11" fill="var(--muted)">' + shortMoney(t) + '</text>';
+    }
+    r.rows.forEach(function (row, i) {
+      var x = L + i * bw + bw * 0.18, w = bw * 0.64;
+      if (row.entra > 0) h += '<rect x="' + x + '" y="' + y(row.entra) + '" width="' + w + '" height="' + (y(0) - y(row.entra)) + '" rx="3" fill="var(--brand)"/>';
+      else h += '<rect x="' + x + '" y="' + (y(0) - 3) + '" width="' + w + '" height="3" rx="1.5" fill="var(--line)"/>';
+      if (i % 2 === 0) h += '<text x="' + (x + w / 2) + '" y="' + (Hh - B + 18) + '" text-anchor="middle" font-size="11" fill="var(--muted)">' + row.mes + '</text>';
+    });
+    h += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(r.s.meta) + '" y2="' + y(r.s.meta) + '" stroke="var(--gold)" stroke-width="2" stroke-dasharray="6 5"/>';
+    h += '<text x="' + (L + 6) + '" y="' + (y(r.s.meta) - 7) + '" text-anchor="start" font-size="12" font-weight="600" fill="var(--gold)">Meta ' + money(r.s.meta) + '</text>';
+    var first = r.s.prazo; // index of first paying month
+    if (first < r.rows.length) {
+      var fx = L + first * bw + bw / 2;
+      h += '<text x="' + fx + '" y="' + (y(r.mensal) - 8) + '" text-anchor="start" font-size="12" font-weight="700" fill="var(--ink)">Começa a entrar</text>';
+    }
+    svg.innerHTML = h;
+  }
+  function niceStep(raw) { var p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p; }
+  function shortMoney(v) { return v >= 1000 ? "R$ " + n1.format(v / 1000) + " mil" : "R$ " + v; }
+
+  function render() {
+    var r = calc(getState()), s = r.s;
+    var title = s.escritorio ? "Plano de recorrência · " + s.escritorio : "Plano de recorrência";
+    $("who-title").textContent = title;
+    var d = s.data ? s.data.split("-").reverse().join("/") : "";
+    $("who-meta").textContent = [s.nome, r.svcNome, d].filter(Boolean).join(" · ");
+    $("c1-big").textContent = r.fechar;
+    $("c1-pagam").textContent = n1.format(r.pagam) + " contratos";
+    $("c1-faltam").textContent = r.faltam;
+    $("c1-inicio").textContent = r.inicioReceb;
+    $("c1-mensal").textContent = money(r.mensal);
+    $("c2-tag").textContent = "Primeiros " + shortMoney(s.acum).replace("R$ ", "R$ ");
+    $("c2-big").textContent = r.pc;
+    $("c2-sub").textContent = "contratos por mês, de " + r.pDe + " a " + r.pAte;
+    $("c2-inicio").textContent = r.inicioReceb; $("c2-mensal").textContent = money(r.pMensal);
+    $("c2-fim").textContent = r.pFim; $("c2-total").textContent = money(r.pTotal);
+    $("c3-tag").textContent = shortMoney(s.alta) + " por mês";
+    $("c3-big").textContent = r.ac;
+    $("c3-semana").textContent = n1.format(r.aSem); $("c3-dia").textContent = diaTxt(r);
+    $("c3-inicio").textContent = r.inicioReceb; $("c3-mensal").textContent = money(r.aMensal);
+    $("closing").innerHTML = closingText(r);
+    $("chart-sub").textContent = "Quanto dinheiro entra a cada mês se você fechar " + r.fechar + " contratos de " + r.svcNome + " todo mês. A linha tracejada é a sua meta de " + money(s.meta) + ".";
+    drawChart(r);
+    $("tbody").innerHTML = r.rows.map(function (row) {
+      return '<tr class="' + (row.entra >= s.meta ? "hit" : "") + '"><td>' + row.mes + "</td><td>" + row.fecha + "</td><td>" + n1.format(row.devem) + "</td><td>" + money(row.valor) +
+        '</td><td class="in">' + money(row.entra) + "</td><td>" + money(row.aReceber) + "</td></tr>";
+    }).join("");
+    return r;
+  }
+
+  // service change fills its defaults
+  document.querySelectorAll('input[name="svc"]').forEach(function (el) {
+    el.addEventListener("change", function () { var d = SVC[el.value]; $("hon").value = fmtMoneyInput(d.hon); $("prazo").value = d.prazo; render(); });
+  });
+  ["hon", "meta", "acum", "alta"].forEach(function (id) {
+    $(id).addEventListener("blur", function () { var v = parseMoney($(id).value); if (isFinite(v) && v > 0) $(id).value = fmtMoneyInput(v); });
+  });
+  $("f").addEventListener("input", render);
+  $("f").addEventListener("submit", function (e) { e.preventDefault(); });
+
+  // restore
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { saved = null; }
+  setForm(Object.assign({}, defaults, saved || {}));
+  render();
+
+  var status = $("status");
+  function say(t) { status.textContent = t; }
+
+  $("save").addEventListener("click", function () {
+    try { localStorage.setItem(KEY, JSON.stringify(getState())); say("Salvo neste navegador. Ao voltar por este mesmo link, seus dados estarão aqui."); }
+    catch (e) { say("Não foi possível salvar neste navegador. Baixe o PDF para guardar o seu plano."); }
+  });
+
+  // outside the Claude viewer (site próprio), print and direct download work
+  var framed = typeof window.claude !== "undefined" && window.claude && typeof window.claude.use === "function";
+  var downloads = null;
+  if (!framed) { $("print").hidden = false; $("print").addEventListener("click", function () { window.print(); }); }
+  else { window.claude.use("downloads").then(function (d) { downloads = d; if (!d) $("pdf").hidden = true; }).catch(function () { $("pdf").hidden = true; }); }
+
+  function buildPdf(r) {
+    var J = window.jspdf && window.jspdf.jsPDF; if (!J) return null;
+    var s = r.s, doc = new J({ unit: "mm", format: "a4" });
+    var BR = [92, 26, 38], GD = [169, 132, 74], INK = [43, 34, 38], MU = [110, 100, 104], LN = [232, 223, 210];
+    var W = 210, M = 16, y;
+    doc.setFillColor.apply(doc, BR); doc.rect(0, 0, W, 34, "F");
+    doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(20);
+    doc.text("Plano de Recorrência", M, 17);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(10.5);
+    doc.text("Calculadora da Recorrência · Workshop Contrato Todo Mês", M, 25);
+    y = 46;
+    doc.setTextColor.apply(doc, INK); doc.setFont("helvetica", "bold"); doc.setFontSize(14);
+    doc.text(s.escritorio || "Escritório", M, y);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(10.5); doc.setTextColor.apply(doc, MU);
+    var d = s.data ? s.data.split("-").reverse().join("/") : "";
+    doc.text([s.nome, d].filter(Boolean).join("  ·  "), M, y + 6);
+    doc.setDrawColor.apply(doc, GD); doc.setLineWidth(0.6); doc.line(M, y + 10, W - M, y + 10);
+    y += 18;
+    doc.setFontSize(9.5); doc.setTextColor.apply(doc, MU);
+    var dados = [["Serviço", r.svcNome], ["Honorário por contrato", money(s.hon)], ["Prazo até receber", s.prazo + " meses"], ["Perda de contratos", s.perda + "%"], ["Meta mensal", money(s.meta)], ["Começa a fechar em", lab(s.inicio, 0)]];
+    var cw = (W - 2 * M) / 3;
+    dados.forEach(function (p, i) {
+      var cx = M + (i % 3) * cw, cy = y + Math.floor(i / 3) * 12;
+      doc.setTextColor.apply(doc, MU); doc.setFontSize(8.5); doc.text(p[0].toUpperCase(), cx, cy);
+      doc.setTextColor.apply(doc, INK); doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text(String(p[1]), cx, cy + 5); doc.setFont("helvetica", "normal");
+    });
+    y += 30;
+    var cards = [
+      ["SUA META MENSAL", String(r.fechar), "contratos por mês", [["Devem pagar", n1.format(r.pagam)], ["Começa a receber", r.inicioReceb], ["Entra por mês", money(r.mensal)]]],
+      ["PRIMEIROS " + shortMoney(s.acum).toUpperCase(), String(r.pc), "por mês, " + r.pDe + " a " + r.pAte, [["Começa a receber", r.inicioReceb], ["Entra por mês", money(r.pMensal)], ["Total recebido", money(r.pTotal)]]],
+      [shortMoney(s.alta).toUpperCase() + " POR MÊS", String(r.ac), "contratos por mês", [["Por semana", n1.format(r.aSem)], ["Por dia útil", diaTxt(r)], ["Entra por mês", money(r.aMensal)]]]
+    ];
+    var gw = (W - 2 * M - 8) / 3;
+    cards.forEach(function (c, i) {
+      var cx = M + i * (gw + 4);
+      doc.setDrawColor.apply(doc, i === 0 ? BR : LN); doc.setLineWidth(i === 0 ? 0.6 : 0.3); doc.roundedRect(cx, y, gw, 54, 2, 2, "S");
+      doc.setTextColor.apply(doc, GD); doc.setFont("helvetica", "bold"); doc.setFontSize(7.5); doc.text(c[0], cx + 4, y + 7);
+      doc.setTextColor.apply(doc, BR); doc.setFontSize(24); doc.text(c[1], cx + 4, y + 19);
+      doc.setTextColor.apply(doc, MU); doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.text(c[2], cx + 4, y + 25);
+      c[3].forEach(function (f, j) {
+        var fy = y + 33 + j * 7; doc.setDrawColor.apply(doc, LN); doc.setLineWidth(0.2); doc.line(cx + 4, fy - 4, cx + gw - 4, fy - 4);
+        doc.setTextColor.apply(doc, MU); doc.setFontSize(8.5); doc.text(f[0], cx + 4, fy);
+        doc.setTextColor.apply(doc, INK); doc.setFont("helvetica", "bold"); doc.text(f[1], cx + gw - 4, fy, { align: "right" }); doc.setFont("helvetica", "normal");
+      });
+    });
+    y += 62;
+    var plain = closingText(r).replace(/<[^>]+>/g, "");
+    doc.setFontSize(10.5); var lines = doc.splitTextToSize(plain, W - 2 * M - 12);
+    var bh = lines.length * 5 + 10;
+    doc.setFillColor.apply(doc, BR); doc.roundedRect(M, y, W - 2 * M, bh, 2, 2, "F");
+    doc.setTextColor(255, 255, 255); doc.text(lines, M + 6, y + 8);
+    y += bh + 10;
+    // chart
+    doc.setTextColor.apply(doc, INK); doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.text("A escada da sua meta mensal", M, y);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor.apply(doc, MU); doc.text("Dinheiro que entra a cada mês. A linha tracejada é a sua meta.", M, y + 5);
+    y += 10;
+    var ch = 48, cwid = W - 2 * M - 14, cx0 = M + 14, max = Math.max(s.meta, r.mensal) * 1.15, bw = cwid / r.rows.length;
+    var yy = function (v) { return y + ch * (1 - v / max); };
+    doc.setDrawColor.apply(doc, LN); doc.setLineWidth(0.2); doc.line(cx0, y + ch, cx0 + cwid, y + ch);
+    r.rows.forEach(function (row, i) {
+      var x = cx0 + i * bw + bw * 0.18, w = bw * 0.64;
+      if (row.entra > 0) { doc.setFillColor.apply(doc, BR); doc.rect(x, yy(row.entra), w, y + ch - yy(row.entra), "F"); }
+      if (i % 2 === 0) { doc.setFontSize(7); doc.setTextColor.apply(doc, MU); doc.text(row.mes, x + w / 2, y + ch + 4.5, { align: "center" }); }
+    });
+    doc.setDrawColor.apply(doc, GD); doc.setLineWidth(0.5); doc.setLineDashPattern([1.5, 1.2], 0); doc.line(cx0, yy(s.meta), cx0 + cwid, yy(s.meta)); doc.setLineDashPattern([], 0);
+    doc.setFontSize(7.5); doc.setTextColor.apply(doc, GD); doc.text("Meta " + money(s.meta), cx0 + 1, yy(s.meta) - 1.5);
+    doc.setTextColor.apply(doc, MU); doc.setFontSize(7); doc.text(shortMoney(max).replace(" mil", "k"), M, y + 3);
+    y += ch + 14;
+    doc.setFontSize(8); doc.setTextColor.apply(doc, MU);
+    doc.text("Valores sugeridos: médias de um escritório previdenciário 100% virtual. Projeção estimada; os resultados dependem da execução.", M, 287);
+    doc.addPage();
+    doc.setFillColor.apply(doc, BR); doc.rect(0, 0, W, 12, "F");
+    doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(10);
+    doc.text("Plano de Recorrência" + (s.escritorio ? "  ·  " + s.escritorio : ""), M, 8);
+    y = 26;
+    // table (18 months)
+    var cols = ["Mês", "Fecha", "Devem pagar", "Fechados (R$)", "Entra (R$)", "A receber (R$)"], cwx = [22, 18, 26, 36, 36, 40];
+    doc.setFillColor(245, 238, 227); doc.rect(M, y - 4.5, W - 2 * M, 7, "F");
+    doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor.apply(doc, INK);
+    var cx = M + 2; cols.forEach(function (c, i) { doc.text(c, i ? cx + cwx[i] - 2 : cx, y, i ? { align: "right" } : undefined); cx += cwx[i]; });
+    doc.setFont("helvetica", "normal");
+    r.rows.forEach(function (row, k) {
+      var ry = y + 6 + k * 6; cx = M + 2;
+      if (k % 2 === 1) { doc.setFillColor(251, 248, 244); doc.rect(M, ry - 4.2, W - 2 * M, 6, "F"); }
+      [row.mes, String(row.fecha), n1.format(row.devem), money(row.valor), money(row.entra), money(row.aReceber)].forEach(function (v, i) {
+        doc.setTextColor.apply(doc, i === 4 && row.entra > 0 ? BR : INK);
+        doc.text(v, i ? cx + cwx[i] - 2 : cx, ry, i ? { align: "right" } : undefined); cx += cwx[i];
+      });
+    });
+    var cy = y + 6 + r.rows.length * 6 + 12;
+    doc.setFillColor(243, 232, 214); doc.setDrawColor.apply(doc, GD); doc.setLineWidth(0.4); doc.roundedRect(M, cy, W - 2 * M, 34, 2, 2, "FD");
+    doc.setTextColor.apply(doc, BR); doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.text("Quer estruturar todo o seu escritório?", M + 6, cy + 10);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor.apply(doc, INK);
+    doc.text("Participe da Mentoria de Implantação rumo aos 100k.", M + 6, cy + 17);
+    doc.setFillColor.apply(doc, BR); doc.roundedRect(M + 6, cy + 21, 74, 9, 4.5, 4.5, "F");
+    doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(10);
+    doc.text("Quero saber mais pelo WhatsApp", M + 43, cy + 27, { align: "center" });
+    doc.link(M + 6, cy + 21, 74, 9, { url: "https://wa.me/5587998094537?text=Quero%20saber%20mais%20sobre%20a%20Mentoria%20rumo%20aos%20100k" });
+    doc.setTextColor.apply(doc, MU); doc.setFont("helvetica", "normal"); doc.setFontSize(9.5); doc.text("(87) 99809-4537", M + 86, cy + 27);
+    doc.setFontSize(8); doc.setTextColor.apply(doc, MU);
+    doc.text("Valores sugeridos: médias de um escritório previdenciário 100% virtual. Projeção estimada; os resultados dependem da execução.", M, 287);
+    return doc;
+  }
+
+  $("pdf").addEventListener("click", function () {
+    var r = render(), doc = buildPdf(r);
+    if (!doc) { say("O gerador de PDF ainda está carregando. Tente de novo em alguns segundos."); return; }
+    var name = "Plano de Recorrência" + (r.s.escritorio ? " - " + r.s.escritorio : "") + ".pdf";
+    var blob = doc.output("blob");
+    if (framed) {
+      if (!downloads) { say("O download não está disponível nesta visualização."); return; }
+      say("Confirme o download na janela que abriu.");
+      downloads.save({ filename: name, data: blob }).then(function () { say("Pronto! Seu plano foi baixado."); })
+        .catch(function (e) { var c = e && e.code; say(c === "declined" ? "Download cancelado." : c === "rate_limited" ? "Aguarde um instante e tente de novo." : "Não foi possível baixar agora."); });
+    } else {
+      var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000); say("Pronto! Seu plano foi baixado.");
+    }
+  });
+})();
+</script>
+</body></html>
