@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Converse comigo · Jucineide Galvão</title>
+<style>
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F6EFE4;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#2B2226;text-align:center;padding:24px;box-sizing:border-box}
+  .card{max-width:360px}
+  .k{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#A9844A;font-weight:700}
+  h1{font-family:Georgia,"Times New Roman",serif;font-weight:600;color:#5C1A26;font-size:30px;margin:12px 0 10px}
+  p{font-size:15px;line-height:1.55;color:#6E6468;margin:0 0 22px}
+  a{display:inline-block;background:#5C1A26;color:#F3E8D6;text-decoration:none;font-weight:700;font-size:13px;letter-spacing:1.2px;text-transform:uppercase;padding:15px 22px;border-radius:4px}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="k">Jucineide Galvão</div>
+    <h1>Abrindo o WhatsApp…</h1>
+    <p>Se ele não abrir sozinho em alguns segundos, toque no botão abaixo.</p>
+    <a id="go" href="#">Abrir o WhatsApp</a>
+  </div>
+<script>
+  var msg = "Oi, Jucineide! Vim pelo link da sua bio no Instagram e quero conversar sobre o meu escritório.";
+  var url = "https://wa.me/5587998094537?text=" + encodeURIComponent(msg);
+  document.getElementById("go").href = url;
+  setTimeout(function () { location.replace(url); }, 300);
+</script>
+</body>
+</html>
