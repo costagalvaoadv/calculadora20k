@@ -125,6 +125,35 @@ details summary { cursor: pointer; font-weight: 600; color: var(--brand); paddin
 .wa:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 .cta small { color: var(--muted); font-size: 13px; user-select: all; }
 footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
+/* Etiqueta de prazo dos serviços */
+.svc .pz { display: inline-block; margin: 3px 0 2px; font-style: normal; font-size: 11.5px; font-weight: 700; letter-spacing: .04em; color: var(--brand); background: var(--gold-soft); border: 1px solid var(--gold); border-radius: 999px; padding: 2px 9px; }
+.svc:has(input:checked) .pz { background: var(--bg); }
+/* Mês da virada */
+.virada { border-radius: var(--r); padding: 22px; background: linear-gradient(135deg, #3B1018, var(--brand)); color: #fff; display: flex; flex-direction: column; gap: 8px; }
+.virada .vk { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; color: #E2C796; }
+.virada strong { font-size: 24px; line-height: 1.25; font-weight: 700; }
+.virada strong b { color: #F3E3C7; }
+.virada small { font-size: 14px; color: rgba(255,255,255,.82); border-top: 1px solid rgba(226,199,150,.35); padding-top: 10px; margin-top: 4px; }
+.gate .proof { font-size: 13.5px; color: var(--muted); font-style: italic; margin-top: -6px; }
+.gate .gname { font-size: 17px; padding: 12px 14px; }
+/* Bloqueio do plano */
+.plan.locked .lockable { filter: blur(7px); opacity: .75; pointer-events: none; user-select: none; -webkit-user-select: none; }
+.plan:not(.locked) .gate { display: none; }
+.cards { grid-auto-flow: row dense; }
+.cards .gate { grid-column: 1 / -1; }
+.gate { border: 1px solid var(--gold); background: var(--gold-soft); border-radius: var(--r); padding: 24px 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 10px 30px rgba(92,26,38,.10); }
+.gate .gk { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; color: var(--gold); }
+.gate strong { font-size: 24px; line-height: 1.2; color: var(--brand); }
+:root[data-theme="dark"] .gate strong { color: var(--gold); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .gate strong { color: var(--gold); } }
+.gate p { margin: 0; font-size: 15px; color: var(--ink); }
+.gate .grow { display: flex; flex-wrap: wrap; gap: 10px; }
+.gate .grow input { flex: 1 1 220px; font-size: 17px; padding: 12px 14px; }
+.gate .grow button { flex: 0 0 auto; }
+.gate .consent { flex-direction: row; align-items: flex-start; gap: 10px; font-weight: 400; font-size: 13.5px; line-height: 1.45; color: var(--ink); cursor: pointer; }
+.gate .consent input { width: 18px; height: 18px; flex: none; margin: 2px 0 0; padding: 0; accent-color: var(--brand); }
+.gate .lgpd { font-size: 12px; color: var(--muted); margin: 0; }
+.gate .err { font-size: 13.5px; color: #B3261E; min-height: 1.2em; margin: 0; font-weight: 600; }
 @media print {
   .band, .form, footer, .actions { display: none !important; }
   main .wrap { display: block; padding: 0; }
@@ -135,33 +164,27 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
 
 <header class="band">
   <div class="wrap">
-    <span class="eyebrow">Workshop Contrato Todo Mês</span>
+    <span class="eyebrow">Ferramenta gratuita · Jucineide Galvão</span>
     <h1>Calculadora da Recorrência</h1>
-    <p>Descubra quantos contratos fechar por mês e quando os seus honorários começam a entrar, todo mês, com o serviço previdenciário que você escolher.</p>
+    <p>Coloque a sua meta e descubra o caminho: quantos contratos fechar por mês e em que mês os honorários começam a entrar.</p>
   </div>
 </header>
 
 <main>
   <div class="wrap">
     <form class="panel form" id="f" novalidate>
+      <input type="hidden" id="escritorio"><input type="hidden" id="data">
       <div class="group">
-        <h2>Quem está preenchendo</h2>
-        <label for="nome">Seu nome<input id="nome" autocomplete="name" placeholder="Ex.: Dra. Ana Souza"></label>
-        <label for="escritorio">Nome do escritório<input id="escritorio" autocomplete="organization" placeholder="Ex.: Souza Advocacia"></label>
-        <label for="data">Data do preenchimento<input id="data" type="date"></label>
-      </div>
-      <div class="sep"></div>
-      <div class="group">
-        <h2>Serviço que você vai trabalhar</h2>
+        <h2>1. Escolha o serviço</h2>
         <div class="svcs" role="radiogroup" aria-label="Serviço">
-          <label class="svc"><input type="radio" name="svc" value="sm" id="svc-sm" checked><span class="dot"></span><span><b>Salário-Maternidade</b><em>R$ 2.000 por contrato · cerca de 4 meses</em></span></label>
-          <label class="svc"><input type="radio" name="svc" value="bpc" id="svc-bpc"><span class="dot"></span><span><b>BPC/LOAS</b><em>a partir de R$ 10.000 · 6 a 8 meses</em></span></label>
-          <label class="svc"><input type="radio" name="svc" value="aa" id="svc-aa"><span class="dot"></span><span><b>Auxílio-Acidente</b><em>a partir de R$ 12.000 · cerca de 10 meses</em></span></label>
+          <label class="svc"><input type="radio" name="svc" value="sm" id="svc-sm" checked><span class="dot"></span><span><b>Salário-Maternidade</b><i class="pz">Curto prazo · cerca de 4 meses</i><br><em>R$ 2.000 por contrato</em></span></label>
+          <label class="svc"><input type="radio" name="svc" value="bpc" id="svc-bpc"><span class="dot"></span><span><b>BPC/LOAS</b><i class="pz">Médio prazo · 6 a 8 meses</i><br><em>a partir de R$ 10.000 por contrato</em></span></label>
+          <label class="svc"><input type="radio" name="svc" value="aa" id="svc-aa"><span class="dot"></span><span><b>Auxílio-Acidente</b><i class="pz">Longo prazo · cerca de 10 meses</i><br><em>a partir de R$ 12.000 por contrato</em></span></label>
         </div>
       </div>
       <div class="sep"></div>
       <div class="group">
-        <h2>Seus números</h2>
+        <h2>2. Defina sua meta</h2>
         <label for="hon">Honorário médio por contrato<div class="prefix"><span>R$</span><input id="hon" inputmode="decimal"></div></label>
         <div class="row2">
           <label for="prazo">Prazo até receber<div class="suffix"><input id="prazo" type="number" min="1" max="36" step="1"><span>meses</span></div></label>
@@ -176,7 +199,7 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
       </div>
       <div class="sep"></div>
       <div class="group">
-        <h2>Suas projeções</h2>
+        <h2>3. Suas projeções</h2>
         <div class="row2">
           <label for="acum">Primeiros a fechar<div class="prefix"><span>R$</span><input id="acum" inputmode="decimal"></div></label>
           <label for="meses">Em quantos meses<div class="suffix"><input id="meses" type="number" min="1" max="60" step="1"><span>meses</span></div></label>
@@ -192,7 +215,7 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
       <div class="note" id="status" role="status" aria-live="polite"></div>
     </form>
 
-    <section class="plan" aria-label="Seu plano">
+    <section class="plan locked" id="plan" aria-label="Seu plano">
       <div class="who">
         <h2 id="who-title">Plano de recorrência</h2>
         <span id="who-meta"></span>
@@ -203,14 +226,28 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
           <span class="tag">Sua meta mensal</span>
           <div class="big" id="c1-big">0</div>
           <p>contratos para fechar por mês</p>
-          <ul class="facts">
+          <ul class="facts lockable">
             <li><span>Devem pagar</span><b id="c1-pagam"></b></li>
             <li><span>Faltam em relação a hoje</span><b id="c1-faltam"></b></li>
             <li><span>Começa a receber</span><b id="c1-inicio"></b></li>
             <li><span>Passa a entrar por mês</span><b id="c1-mensal"></b></li>
           </ul>
         </article>
-        <article class="card">
+        <form class="gate" id="gate" novalidate>
+        <span class="gk">100% gratuito</span>
+        <strong>Seu plano está pronto.</strong>
+        <p class="proof">Cálculo feito com as médias reais do meu escritório, desde 2015.</p>
+        <p>Informe seu nome e WhatsApp para liberar grátis o cronograma mês a mês, o gráfico e o PDF.</p>
+        <input id="nome" class="gname" autocomplete="name" placeholder="Seu nome" aria-label="Seu nome">
+        <div class="grow">
+          <input id="wa" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(87) 99999-9999" aria-label="Seu WhatsApp com DDD" maxlength="16">
+          <button type="submit" class="primary" id="gate-btn">Liberar grátis</button>
+        </div>
+        <label class="consent" for="ok"><input type="checkbox" id="ok"> Autorizo receber o resultado e materiais da Jucineide Galvão pelo WhatsApp.</label>
+        <p class="err" id="gate-err" role="alert"></p>
+        <p class="lgpd">Seu número é usado somente para esse contato, conforme a LGPD. Você pode pedir a exclusão a qualquer momento.</p>
+      </form>
+        <article class="card lockable">
           <span class="tag" id="c2-tag">Primeiros R$ 100 mil</span>
           <div class="big" id="c2-big">0</div>
           <p id="c2-sub">contratos por mês</p>
@@ -221,7 +258,7 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
             <li><span>Total recebido</span><b id="c2-total"></b></li>
           </ul>
         </article>
-        <article class="card">
+        <article class="card lockable">
           <span class="tag" id="c3-tag">R$ 100 mil por mês</span>
           <div class="big" id="c3-big">0</div>
           <p>contratos para fechar por mês</p>
@@ -234,29 +271,35 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
         </article>
       </div>
 
-      <div class="closing" id="closing"></div>
+      <div class="virada lockable" id="virada">
+        <span class="vk">O mês da virada</span>
+        <strong id="virada-txt"></strong>
+        <small id="perda-txt"></small>
+      </div>
 
-      <div class="cta">
+      <div class="closing lockable" id="closing"></div>
+
+      <div class="cta lockable">
         <div>
-          <strong>Quer estruturar todo o seu escritório?</strong>
-          <p>Participe da Mentoria de Implantação rumo aos 100k e implante setores, fluxos e controle com acompanhamento.</p>
+          <strong>Você já sabe o número. O próximo passo é a estrutura.</strong>
+          <p>A estrutura que faz esses contratos fecharem todo mês, com a sua equipe e sem depender só de você.</p>
         </div>
         <aside>
-          <a class="wa" href="https://wa.me/5587998094537?text=Quero%20saber%20mais%20sobre%20a%20Mentoria%20rumo%20aos%20100k" target="_blank" rel="noopener">
+          <a class="wa" id="wa-cta" href="https://wa.me/5587998094537" target="_blank" rel="noopener">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11.5a8 8 0 0 1-11.8 7L4 20l1.5-4.1A8 8 0 1 1 20 11.5z"/></svg>
-            Quero saber mais
+            Quero conversar sobre isso
           </a>
           <small>WhatsApp: (87) 99809-4537</small>
         </aside>
       </div>
 
-      <div class="section">
+      <div class="section lockable">
         <h3>A escada da sua meta mensal</h3>
         <p id="chart-sub">Quanto dinheiro entra a cada mês se você fechar a sua meta de contratos todo mês. A linha tracejada é a sua meta.</p>
         <svg class="chart" id="chart" viewBox="0 0 760 300" role="img" aria-label="Gráfico do dinheiro que entra por mês"></svg>
       </div>
 
-      <details class="section">
+      <details class="section lockable">
         <summary>Ver a escada mês a mês</summary>
         <div class="tablewrap" style="margin-top:10px">
           <table>
@@ -280,6 +323,10 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
   };
   var MESES = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
   var KEY = "calc-recorrencia-v1";
+  var plan = document.getElementById("plan");
+  // Cole entre as aspas a URL do App da Web do Google Apps Script (planilha de leads)
+  var LEADS_URL = "https://script.google.com/macros/s/AKfycbzq-h0pnfzWAnl0gVRSC3x4U3QieO3ptsTHoy4HwgvN6NTmXZ2uKlUKFT1qBNiacLvngw/exec";
+  var UNLOCK_KEY = KEY + ":liberado";
   var $ = function (id) { return document.getElementById(id); };
   var brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
   var n1 = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 });
@@ -345,6 +392,17 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
     return r;
   }
 
+  function saudar(nome) {
+    var p = String(nome || "").trim().split(/\s+/);
+    if (!p[0]) return "";
+    return (/^dra?\.?$/i.test(p[0]) && p[1]) ? p[0] + " " + p[1] : p[0];
+  }
+  function msgCta(r) {
+    var s = r.s;
+    return "Olá, Jucineide! Fiz meu plano na Calculadora da Recorrência: minha meta é " + shortMoney(s.meta) + " por mês com " + r.svcNome +
+      ", o que dá " + r.fechar + " contratos por mês. " + (s.hoje > 0 ? "Hoje fecho " + s.hoje + ". " : "Estou começando agora. ") + "Quero conversar sobre como chegar lá.";
+  }
+
   function diaTxt(r) { return r.aDia < 1 ? "1 a cada " + Math.round(22 / r.ac) + " dias úteis" : n1.format(r.aDia); }
 
   function closingText(r) {
@@ -384,8 +442,13 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
 
   function render() {
     var r = calc(getState()), s = r.s;
-    var title = s.escritorio ? "Plano de recorrência · " + s.escritorio : "Plano de recorrência";
-    $("who-title").textContent = title;
+    var sauda = saudar(s.nome);
+    $("who-title").textContent = (sauda && !plan.classList.contains("locked")) ? sauda + ", seu plano está pronto." : "Plano de recorrência";
+    $("virada-txt").innerHTML = "A partir de <b>" + r.inicioReceb + "</b>, entram cerca de <b>" + money(r.mensal) + "</b> todos os meses.";
+    var menos = r.fechar - (s.perda >= 10 ? Math.ceil((s.meta / s.hon) / (1 - (s.perda - 10) / 100)) : r.fechar);
+    $("perda-txt").textContent = menos > 0 ? "Cada 10% a menos de perda " + (menos === 1 ? "é 1 contrato a menos" : "são " + menos + " contratos a menos") + " para fechar por mês." : "";
+    $("perda-txt").hidden = !(menos > 0);
+    $("wa-cta").href = "https://wa.me/5587998094537?text=" + encodeURIComponent(msgCta(r));
     var d = s.data ? s.data.split("-").reverse().join("/") : "";
     $("who-meta").textContent = [s.nome, r.svcNome, d].filter(Boolean).join(" · ");
     $("c1-big").textContent = r.fechar;
@@ -417,6 +480,12 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
     el.addEventListener("change", function () { var d = SVC[el.value]; $("hon").value = fmtMoneyInput(d.hon); $("prazo").value = d.prazo; render(); });
   });
   ["hon", "meta", "acum", "alta"].forEach(function (id) {
+    $(id).addEventListener("input", function () {
+      var d = this.value.replace(/\D/g, "").replace(/^0+(?=\d)/, "").slice(0, 9);
+      this.value = d ? new Intl.NumberFormat("pt-BR").format(+d) : "";
+    });
+  });
+  ["hon", "meta", "acum", "alta"].forEach(function (id) {
     $(id).addEventListener("blur", function () { var v = parseMoney($(id).value); if (isFinite(v) && v > 0) $(id).value = fmtMoneyInput(v); });
   });
   $("f").addEventListener("input", render);
@@ -426,7 +495,62 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
   var saved = null;
   try { saved = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { saved = null; }
   setForm(Object.assign({}, defaults, saved || {}));
+
+  // ===== Plano enviado por link (?plano=...) abre preenchido e liberado =====
+  function encPlano(s) { try { return btoa(unescape(encodeURIComponent(JSON.stringify(s)))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); } catch (e) { return ""; } }
+  function decPlano(x) { x = x.replace(/-/g, "+").replace(/_/g, "/"); while (x.length % 4) x += "="; return JSON.parse(decodeURIComponent(escape(atob(x)))); }
+  var params = new URLSearchParams(location.search), viaLink = false;
+  if (params.get("plano")) { try { setForm(Object.assign({}, defaults, decPlano(params.get("plano")))); viaLink = true; } catch (e) {} }
+
+  function liberado() { if (viaLink) return true; try { return localStorage.getItem(UNLOCK_KEY) === "1"; } catch (e) { return false; } }
+  function setLocked(b) { plan.classList.toggle("locked", b); }
+  setLocked(!liberado());
   render();
+
+  // ===== WhatsApp: máscara, validação e envio =====
+  function digits(v) { return String(v || "").replace(/\D/g, "").slice(0, 11); }
+  function maskWa(v) {
+    var d = digits(v);
+    if (d.length <= 2) return d.length ? "(" + d : "";
+    if (d.length <= 6) return "(" + d.slice(0, 2) + ") " + d.slice(2);
+    if (d.length <= 10) return "(" + d.slice(0, 2) + ") " + d.slice(2, 6) + "-" + d.slice(6);
+    return "(" + d.slice(0, 2) + ") " + d.slice(2, 7) + "-" + d.slice(7);
+  }
+  $("wa").addEventListener("input", function () { this.value = maskWa(this.value); $("gate-err").textContent = ""; });
+  $("ok").addEventListener("change", function () { $("gate-err").textContent = ""; });
+  $("nome").addEventListener("input", function () { $("gate-err").textContent = ""; });
+
+  function enviarLead(r, fone) {
+    var s = r.s, base = location.origin + location.pathname;
+    var payload = {
+      nome: s.nome, escritorio: s.escritorio, whatsapp: fone, servico: r.svcNome,
+      honorario: s.hon, prazo: s.prazo, perda: s.perda, meta: s.meta,
+      fechaHoje: s.hoje, precisaFechar: r.fechar, faltam: r.faltam,
+      comecaReceber: r.inicioReceb, entraPorMes: Math.round(r.mensal),
+      origem: params.get("utm_source") || (document.referrer ? document.referrer.split("/")[2] : "direto"),
+      consentimento: "Sim, em " + new Date().toLocaleString("pt-BR"),
+      linkPlano: base + "?plano=" + encPlano(s)
+    };
+    if (!LEADS_URL) return;
+    try {
+      fetch(LEADS_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload), keepalive: true }).catch(function () {});
+    } catch (e) {}
+  }
+
+  $("gate").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var fone = digits($("wa").value), err = $("gate-err");
+    if ($("nome").value.trim().length < 2) { err.textContent = "Informe seu nome para personalizar o seu plano."; $("nome").focus(); return; }
+    if (fone.length < 10) { err.textContent = "Confira o número: coloque o DDD e o WhatsApp completo."; $("wa").focus(); return; }
+    if (!$("ok").checked) { err.textContent = "Marque a autorização para liberar o resultado."; return; }
+    var r = render();
+    enviarLead(r, fone);
+    try { localStorage.setItem(UNLOCK_KEY, "1"); localStorage.setItem(KEY, JSON.stringify(getState())); } catch (x) {}
+    setLocked(false);
+    render();
+    say("Plano liberado! Agora é só baixar o seu PDF.");
+    plan.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
 
   var status = $("status");
   function say(t) { status.textContent = t; }
@@ -451,13 +575,13 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
     doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(20);
     doc.text("Plano de Recorrência", M, 17);
     doc.setFont("helvetica", "normal"); doc.setFontSize(10.5);
-    doc.text("Calculadora da Recorrência · Workshop Contrato Todo Mês", M, 25);
+    doc.text("Calculadora da Recorrência · Jucineide Galvão", M, 25);
     y = 46;
     doc.setTextColor.apply(doc, INK); doc.setFont("helvetica", "bold"); doc.setFontSize(14);
-    doc.text(s.escritorio || "Escritório", M, y);
+    doc.text(s.escritorio || s.nome || "Seu escritório", M, y);
     doc.setFont("helvetica", "normal"); doc.setFontSize(10.5); doc.setTextColor.apply(doc, MU);
     var d = s.data ? s.data.split("-").reverse().join("/") : "";
-    doc.text([s.nome, d].filter(Boolean).join("  ·  "), M, y + 6);
+    doc.text([s.escritorio ? s.nome : "", d].filter(Boolean).join("  ·  "), M, y + 6);
     doc.setDrawColor.apply(doc, GD); doc.setLineWidth(0.6); doc.line(M, y + 10, W - M, y + 10);
     y += 18;
     doc.setFontSize(9.5); doc.setTextColor.apply(doc, MU);
@@ -515,7 +639,7 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
     doc.addPage();
     doc.setFillColor.apply(doc, BR); doc.rect(0, 0, W, 12, "F");
     doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(10);
-    doc.text("Plano de Recorrência" + (s.escritorio ? "  ·  " + s.escritorio : ""), M, 8);
+    doc.text("Plano de Recorrência" + ((s.escritorio || s.nome) ? "  ·  " + (s.escritorio || s.nome) : ""), M, 8);
     y = 26;
     // table (18 months)
     var cols = ["Mês", "Fecha", "Devem pagar", "Fechados (R$)", "Entra (R$)", "A receber (R$)"], cwx = [22, 18, 26, 36, 36, 40];
@@ -532,24 +656,30 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
       });
     });
     var cy = y + 6 + r.rows.length * 6 + 12;
-    doc.setFillColor(243, 232, 214); doc.setDrawColor.apply(doc, GD); doc.setLineWidth(0.4); doc.roundedRect(M, cy, W - 2 * M, 34, 2, 2, "FD");
-    doc.setTextColor.apply(doc, BR); doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.text("Quer estruturar todo o seu escritório?", M + 6, cy + 10);
+    doc.setFillColor(243, 232, 214); doc.setDrawColor.apply(doc, GD); doc.setLineWidth(0.4); doc.roundedRect(M, cy, W - 2 * M, 40, 2, 2, "FD");
+    doc.setTextColor.apply(doc, BR); doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.text("Você já sabe o número. O próximo passo é a estrutura.", M + 6, cy + 10);
     doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor.apply(doc, INK);
-    doc.text("Participe da Mentoria de Implantação rumo aos 100k.", M + 6, cy + 17);
-    doc.setFillColor.apply(doc, BR); doc.roundedRect(M + 6, cy + 21, 74, 9, 4.5, 4.5, "F");
+    doc.text(doc.splitTextToSize("A estrutura que faz esses contratos fecharem todo mês, com a sua equipe e sem depender só de você.", W - 2 * M - 12), M + 6, cy + 17);
+    doc.setFillColor.apply(doc, BR); doc.roundedRect(M + 6, cy + 27, 64, 9, 4.5, 4.5, "F");
     doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(10);
-    doc.text("Quero saber mais pelo WhatsApp", M + 43, cy + 27, { align: "center" });
-    doc.link(M + 6, cy + 21, 74, 9, { url: "https://wa.me/5587998094537?text=Quero%20saber%20mais%20sobre%20a%20Mentoria%20rumo%20aos%20100k" });
-    doc.setTextColor.apply(doc, MU); doc.setFont("helvetica", "normal"); doc.setFontSize(9.5); doc.text("(87) 99809-4537", M + 86, cy + 27);
+    doc.text("Quero conversar sobre isso", M + 38, cy + 33, { align: "center" });
+    doc.link(M + 6, cy + 27, 64, 9, { url: "https://wa.me/5587998094537?text=" + encodeURIComponent(msgCta(r)) });
+    doc.setTextColor.apply(doc, MU); doc.setFont("helvetica", "normal"); doc.setFontSize(9.5); doc.text("WhatsApp (87) 99809-4537", M + 76, cy + 33);
     doc.setFontSize(8); doc.setTextColor.apply(doc, MU);
     doc.text("Valores sugeridos: médias de um escritório previdenciário 100% virtual. Projeção estimada; os resultados dependem da execução.", M, 287);
     return doc;
   }
 
   $("pdf").addEventListener("click", function () {
+    if (plan.classList.contains("locked")) {
+      $("gate").scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(function () { $("wa").focus(); }, 450);
+      $("gate-err").textContent = "Informe seu nome e WhatsApp para liberar o PDF.";
+      return;
+    }
     var r = render(), doc = buildPdf(r);
     if (!doc) { say("O gerador de PDF ainda está carregando. Tente de novo em alguns segundos."); return; }
-    var name = "Plano de Recorrência" + (r.s.escritorio ? " - " + r.s.escritorio : "") + ".pdf";
+    var name = "Plano de Recorrência" + ((r.s.escritorio || r.s.nome) ? " - " + (r.s.escritorio || r.s.nome) : "") + ".pdf";
     var blob = doc.output("blob");
     if (framed) {
       if (!downloads) { say("O download não está disponível nesta visualização."); return; }
