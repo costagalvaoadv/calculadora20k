@@ -6,32 +6,24 @@
 <style>
 /* Layout: faixa marsala no topo; coluna de preenchimento à esquerda, plano gerado à direita; empilha no celular */
 :root {
-  --bg: #FFFFFF;
-  --surface: #FBF8F4;
-  --surface-2: #F5EEE3;
+  --bg: #FFFCF7;
+  --surface: #FBF6EE;
+  --surface-2: #F3E8D6;
+  --page: #F6EFE4;
   --ink: #2B2226;
   --muted: #6E6468;
-  --line: #E8DFD2;
+  --line: #E6D8C2;
   --brand: #5C1A26;
   --brand-ink: #FFFFFF;
   --gold: #A9844A;
   --gold-soft: #F3E8D6;
-  --good: #2F6B4A;
+  --good: #5C1A26;
   --font: "Source Sans 3", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
   --r: 12px;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #17120F; --surface: #1F1915; --surface-2: #2A211B; --ink: #F1EAE2; --muted: #B5A99E; --line: #3A2F27;
-    --brand: #8E3445; --brand-ink: #FFFFFF; --gold: #D2AE72; --gold-soft: #3A2E1F; --good: #7FC49C; color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #17120F; --surface: #1F1915; --surface-2: #2A211B; --ink: #F1EAE2; --muted: #B5A99E; --line: #3A2F27;
-  --brand: #8E3445; --brand-ink: #FFFFFF; --gold: #D2AE72; --gold-soft: #3A2E1F; --good: #7FC49C; color-scheme: dark;
+  color-scheme: light;
 }
 * { box-sizing: border-box; }
-body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.5; }
+body { background: var(--page); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.5; }
 .band { background: var(--brand); color: var(--brand-ink); }
 .wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 .band .wrap { padding-block: 32px 28px; display: flex; flex-direction: column; gap: 6px; }
@@ -74,8 +66,6 @@ input:focus-visible, button:focus-visible, .svc:focus-within { outline: 2px soli
 button { font: inherit; font-size: 15px; font-weight: 600; border-radius: 999px; padding: 11px 18px; cursor: pointer; border: 1px solid var(--brand); }
 .primary { background: var(--brand); color: var(--brand-ink); }
 .ghost { background: transparent; color: var(--brand); }
-:root[data-theme="dark"] .ghost { color: var(--gold); border-color: var(--gold); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ghost { color: var(--gold); border-color: var(--gold); } }
 .note { font-size: 13px; color: var(--muted); min-height: 1.2em; }
 
 /* Plano */
@@ -83,8 +73,6 @@ button { font: inherit; font-size: 15px; font-weight: 600; border-radius: 999px;
 .who { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; align-items: baseline; padding-bottom: 14px; border-bottom: 2px solid var(--gold); }
 .who h2 { margin: 0; font-size: 24px; line-height: 1.2; color: var(--brand); text-wrap: balance; }
 .who span { color: var(--muted); font-size: 14px; }
-:root[data-theme="dark"] .who h2, :root[data-theme="dark"] .card .big { color: var(--gold); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .who h2, :root:not([data-theme="light"]) .card .big { color: var(--gold); } }
 
 .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
 @media (max-width: 760px) { .cards { grid-template-columns: minmax(0, 1fr); } }
@@ -112,19 +100,28 @@ tr.hit td.in { color: var(--good); font-weight: 700; }
 .closing { background: var(--brand); color: var(--brand-ink); border-radius: var(--r); padding: 20px 22px; font-size: 16px; line-height: 1.5; }
 .closing b { color: #F3E3C7; }
 details summary { cursor: pointer; font-weight: 600; color: var(--brand); padding: 6px 0; }
-:root[data-theme="dark"] details summary { color: var(--gold); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) details summary { color: var(--gold); } }
 .cta { border: 1px solid var(--gold); background: var(--gold-soft); border-radius: var(--r); padding: 20px 22px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px; }
 .cta div { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1 1 320px; }
 .cta strong { font-size: 20px; line-height: 1.25; color: var(--brand); text-wrap: balance; }
-:root[data-theme="dark"] .cta strong { color: var(--gold); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .cta strong { color: var(--gold); } }
 .cta p { margin: 0; color: var(--ink); font-size: 15px; }
 .cta aside { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .wa { display: inline-flex; align-items: center; gap: 8px; background: var(--brand); color: var(--brand-ink); text-decoration: none; font-weight: 700; font-size: 15px; border-radius: 999px; padding: 12px 20px; }
 .wa:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 .cta small { color: var(--muted); font-size: 13px; user-select: all; }
 footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
+/* Ajustes opcionais */
+select { font: inherit; font-size: 16px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; width: 100%; }
+.adjust { border: 1px dashed var(--gold); border-radius: 10px; background: var(--bg); }
+.adjust summary { cursor: pointer; list-style: none; padding: 13px 14px; font-size: 14px; font-weight: 700; color: var(--brand); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.adjust summary::-webkit-details-marker { display: none; }
+.adjust summary small { font-weight: 500; color: var(--muted); }
+.adjust summary::after { content: "+"; font-size: 20px; color: var(--gold); line-height: 1; }
+.adjust[open] summary::after { content: "–"; }
+.adj-body { padding: 4px 14px 16px; }
+.sent { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+.sent .s-money { flex: 1 1 140px; max-width: 170px; }
+.sent .s-num { flex: 0 0 120px; }
+.sent .s-num input { padding-right: 60px; }
 /* Etiqueta de prazo dos serviços */
 .svc .pz { display: inline-block; margin: 3px 0 2px; font-style: normal; font-size: 11.5px; font-weight: 700; letter-spacing: .04em; color: var(--brand); background: var(--gold-soft); border: 1px solid var(--gold); border-radius: 999px; padding: 2px 9px; }
 .svc:has(input:checked) .pz { background: var(--bg); }
@@ -144,8 +141,6 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
 .gate { border: 1px solid var(--gold); background: var(--gold-soft); border-radius: var(--r); padding: 24px 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 10px 30px rgba(92,26,38,.10); }
 .gate .gk { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; color: var(--gold); }
 .gate strong { font-size: 24px; line-height: 1.2; color: var(--brand); }
-:root[data-theme="dark"] .gate strong { color: var(--gold); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .gate strong { color: var(--gold); } }
 .gate p { margin: 0; font-size: 15px; color: var(--ink); }
 .gate .grow { display: flex; flex-wrap: wrap; gap: 10px; }
 .gate .grow input { flex: 1 1 220px; font-size: 17px; padding: 12px 14px; }
@@ -184,28 +179,32 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
       </div>
       <div class="sep"></div>
       <div class="group">
-        <h2>2. Defina sua meta</h2>
-        <label for="hon">Honorário médio por contrato<div class="prefix"><span>R$</span><input id="hon" inputmode="decimal"></div></label>
-        <div class="row2">
-          <label for="prazo">Prazo até receber<div class="suffix"><input id="prazo" type="number" min="1" max="36" step="1"><span>meses</span></div></label>
-          <label for="perda">Perda de contratos<div class="suffix"><input id="perda" type="number" min="0" max="90" step="1"><span>%</span></div></label>
-        </div>
-        <label for="meta">Meta mensal de honorários<div class="prefix"><span>R$</span><input id="meta" inputmode="decimal"></div></label>
-        <div class="row2">
-          <label for="inicio">Começa a fechar em<input id="inicio" type="month"></label>
-          <label for="hoje">Fecha hoje, por mês<input id="hoje" type="number" min="0" step="1"></label>
-        </div>
-        <small style="color:var(--muted);font-size:13px">Perda: clientes que desistem, somem ou não pagam. O valor de cada contrato continua cheio.</small>
+        <h2>2. Sua meta</h2>
+        <label for="meta">Quanto você quer faturar por mês?<div class="prefix"><span>R$</span><input id="meta" inputmode="numeric"></div></label>
+        <label for="hoje">Quantos contratos desse serviço você fecha hoje, por mês?<input id="hoje" type="number" min="0" step="1" inputmode="numeric"><small>Se ainda não trabalha com ele, deixe 0.</small></label>
       </div>
-      <div class="sep"></div>
-      <div class="group">
-        <h2>3. Suas projeções</h2>
-        <div class="row2">
-          <label for="acum">Primeiros a fechar<div class="prefix"><span>R$</span><input id="acum" inputmode="decimal"></div></label>
-          <label for="meses">Em quantos meses<div class="suffix"><input id="meses" type="number" min="1" max="60" step="1"><span>meses</span></div></label>
+      <details class="adjust">
+        <summary>Ajustar com os números do meu escritório <small>(opcional)</small></summary>
+        <div class="group adj-body">
+          <label for="hon">Honorário médio por contrato<div class="prefix"><span>R$</span><input id="hon" inputmode="numeric"></div><small>Já vem com a média do serviço escolhido.</small></label>
+          <div class="row2">
+            <label for="prazo">Meses até o honorário entrar<div class="suffix"><input id="prazo" type="number" min="1" max="36" step="1"><span>meses</span></div><small>Do contrato assinado até o dinheiro na conta.</small></label>
+            <label for="perda">Contratos que se perdem<div class="suffix"><input id="perda" type="number" min="0" max="90" step="1"><span>%</span></div><small>Clientes que desistem, somem ou deixam de pagar.</small></label>
+          </div>
+          <label for="inicio">Mês em que você começa<select id="inicio"></select><small>Quando você passa a fechar nesse ritmo.</small></label>
+          <div class="sent">
+            <span>Quero juntar</span>
+            <div class="prefix s-money"><span>R$</span><input id="acum" inputmode="numeric" aria-label="Valor a juntar"></div>
+            <span>nos primeiros</span>
+            <div class="suffix s-num"><input id="meses" type="number" min="1" max="60" step="1" aria-label="Número de meses"><span>meses</span></div>
+          </div>
+          <div class="sent">
+            <span>Meu próximo nível: receber</span>
+            <div class="prefix s-money"><span>R$</span><input id="alta" inputmode="numeric" aria-label="Próximo nível por mês"></div>
+            <span>por mês</span>
+          </div>
         </div>
-        <label for="alta">Quanto quer receber por mês<div class="prefix"><span>R$</span><input id="alta" inputmode="decimal"></div></label>
-      </div>
+      </details>
       <div class="sep"></div>
       <div class="actions">
         <button type="button" class="primary" id="pdf">Baixar meu plano em PDF</button>
@@ -347,11 +346,21 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
 
   var defaults = { nome: "", escritorio: "", data: today(), svc: "sm", hon: 2000, prazo: 4, perda: 20, meta: 20000, inicio: nextMonth(), hoje: 0, acum: 100000, meses: 12, alta: 100000 };
 
+  (function fillMonths() {
+    var nomes = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+    var d = new Date(); d.setDate(1); var html = "";
+    for (var i = 0; i < 13; i++) {
+      var v = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+      html += '<option value="' + v + '">' + nomes[d.getMonth()] + " de " + d.getFullYear() + "</option>";
+      d.setMonth(d.getMonth() + 1);
+    }
+    $("inicio").innerHTML = html;
+  })();
   function setForm(s) {
     $("nome").value = s.nome || ""; $("escritorio").value = s.escritorio || ""; $("data").value = s.data || today();
     var r = document.querySelector('input[name="svc"][value="' + (s.svc || "sm") + '"]'); if (r) r.checked = true;
     $("hon").value = fmtMoneyInput(s.hon); $("prazo").value = s.prazo; $("perda").value = s.perda;
-    $("meta").value = fmtMoneyInput(s.meta); $("inicio").value = s.inicio; $("hoje").value = s.hoje;
+    $("meta").value = fmtMoneyInput(s.meta); $("inicio").value = s.inicio; if ($("inicio").value !== s.inicio) $("inicio").value = nextMonth(); $("hoje").value = s.hoje;
     $("acum").value = fmtMoneyInput(s.acum); $("meses").value = s.meses; $("alta").value = fmtMoneyInput(s.alta);
   }
   function getState() {
@@ -489,6 +498,7 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
     $(id).addEventListener("blur", function () { var v = parseMoney($(id).value); if (isFinite(v) && v > 0) $(id).value = fmtMoneyInput(v); });
   });
   $("f").addEventListener("input", render);
+  $("f").addEventListener("change", render);
   $("f").addEventListener("submit", function (e) { e.preventDefault(); });
 
   // restore
